@@ -11,6 +11,7 @@ export const fetchTNTUPageDocument = async (href)  => {
   const response = await fetch(path, {
     method: 'GET',
 	  headers: {
+      accept: 'application/json',
       cookie: "ATutorID=" + ATutorID,
     },            
   });
@@ -29,15 +30,15 @@ export const getCourses = async () => {
   for(let i = 0; i < menuRows.length; i++){
     if(menuRows[i].className.includes("menu_row")){
       if(menuRows[i+1] && menuRows[i+1].id.includes("folder")){
-        let titleCurrNode = menuRows[i].querySelector("span.menumenu-folder-title>span")
-        if(!titleCurrNode) return;
+        let titleCurrNode = menuRows[i].querySelector("span>a>span") || menuRows[i].querySelector("span>.inlineEdits");
+        if(!titleCurrNode) continue;
         const title = titleCurrNode.innerHTML.replace('&nbsp;', '').trim();
         skeleton[title] = {};
         lecturesTableProcessor(menuRows[i+1].children, skeleton[title]);
         i++;
       } else {
         const titleCurrNode = menuRows[i].querySelector("a");
-        if(!titleCurrNode) return;
+        if(!titleCurrNode)continue;
         const title = titleCurrNode.title.trim();
         let href = menuRows[i].querySelector("a").href;
         skeleton[title] = href;
@@ -57,5 +58,5 @@ export const getLecturesTreeByCourseHref = async (href) => {
 }
 
 export const getLecture = (href) => {
-  return fetchTNTUPageDocument(href);
+  return fetchTNTUPageDocument(href + "&cframe=1");
 }
